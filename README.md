@@ -22,12 +22,15 @@ $ dispatch get images
   python3    | dispatch/e3892573-3105-45b9-b6e1-07be7a607cdd:latest | python3-base    | READY  | Mon Nov 26 15:38:42 PST 2018
   ```
 
-Now we can create the function. If you have checked out the Dispatch repository you can create the function using the following command. This assumes your working directory is the root of the Dispatch repository.
+For this example we will use the python hello world example. You can download the python file using curl.
 ```bash
-$ dispatch create function hello-py --image python3 --handler hello.handle examples/python3/hello.py
+$ curl https://raw.githubusercontent.com/vmware/dispatch/solo/examples/python3/hello.py > hello.py
 ```
 
-If you have only downloaded the hello.py script then you need to modify the above example so that the final argument is a path to the hello.py script in your environment.
+Now we can create the function. We'll call it hello-py, use the python3 image, the hello.py file we just downloaded, and set the handler to the handle method in hello.py.
+```bash
+$ dispatch create function hello-py --image python3 --handler hello.handle hello.py
+```
 
 Finally, wait for the function status to change to READY. You can use `dispatch exec` to test the function.
 ```bash
@@ -59,7 +62,7 @@ $ dispatch exec hello-py --wait
 ### Create the Event Driver
 Next we need to create the event driver. This requires two steps. First we need to create the event driver type. We can do that with the following command.
 ```bash
-$ dispatch create eventdrivertype cron dispatchframework/cron-driver:0.0.1
+$ dispatch create eventdrivertype cron dispatchframework/dispatch-events-cron:0.0.1
 ```
 
 Next we can create an instance of the event driver and configure it with our cron spec. Here you can replace the `0/10 * * * *` with any valid cron expression excluding the command to run. The event driver will handle firing an event for you. In this case we are scheduling our function to run at the start of every minute and every ten seconds after that.
